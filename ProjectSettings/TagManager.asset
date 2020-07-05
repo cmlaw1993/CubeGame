@@ -1,0 +1,70 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags: []
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - 
+  - Water
+  - UI
+  - 
+  - 
+  - Cube
+  - Bound
+  - Disabled
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0
+  - name: Background
+    uniqueID: 403038029
+    locked: 0
+  - name: Board
+    uniqueID: 690151265
+    locked: 0
+  - name: Bound
+    uniqueID: 2350584093
+    locked: 0
+  - name: CubeShadow
+    uniqueID: 3504945697
+    locked: 0
+  - name: Cube
+    uniqueID: 3136338547
+    locked: 0
+  - name: CubeShadow1
+    uniqueID: 4093731789
+    locked: 0
+  - name: UI
+    uniqueID: 1696301955
+    locked: 0
+  - name: Particle
+    uniqueID: 689099539
+    locked: 0
+  - name: BoundExit
+    uniqueID: 4032458721
+    locked: 0
