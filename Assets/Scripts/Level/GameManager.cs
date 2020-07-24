@@ -280,8 +280,11 @@ public class GameManager : MonoBehaviour
 
         UpdateHintAnimation();
 
-        if (pauseEnable)
-             return;
+        if (pauseEnable) {
+            /* Rewarded ads can be launched via the store during pause */
+            if (touchMode != TouchMode.ADS_REWARDED)
+                return;
+        }
 
         if (touchMode == TouchMode.NONE)
             DoTouchModeNone();
@@ -446,9 +449,8 @@ public class GameManager : MonoBehaviour
 
             if (hintEnabled) {
                 uiMan.SetPanelHintOnActive(false);
-                uiMan.SetPanelHintLRActive(false);
+                uiMan.SetPanelHintActive(false);
                 uiMan.SetButtonLeftHintImage(false);
-                uiMan.SetButtonRightHintImage(false);
                 hintEnabled = false;
                 hintEnabled = false;
             }
@@ -606,9 +608,7 @@ public class GameManager : MonoBehaviour
 
                 keyMan.SetHintCount(newHintCount);
                 uiMan.SetTextLeftLabelHint(newHintCount);
-                uiMan.SetTextRightLabelHint(newHintCount);
                 uiMan.SetButtonLeftHintActive();
-                uiMan.SetButtonRightHintActive();
                 uiMan.SetStoreHintCount(newHintCount);
                 audioMan.PlayRewardAudio();
                 uiMan.PlayPanelAdRewardEnter();
@@ -829,7 +829,7 @@ public class GameManager : MonoBehaviour
             return;
 
         if (pauseEnable || !hintEnabled) {
-            uiMan.SetPanelHintLRActive(false);
+            uiMan.SetPanelHintActive(false);
             return;
         }
 
@@ -924,24 +924,13 @@ public class GameManager : MonoBehaviour
 
 #endregion
 
-#region PANEL_LEFT_AND_RIGHT_BUTTONS
+#region PANEL_LEFT_BUTTONS
 
-    public void OnButtonLRUndoPressed()
-    {
-        DecrementMove();
-    }
-
-    public void OnButtonLRResetPressed()
-    {
-        ResetMove();
-    }
-
-    public void OnButtonLRHintPressed()
+    public void OnButtonLeftHintPressed()
     {
         if (hintEnabled) {
             uiMan.PlayPanelHintOnExit();
             uiMan.SetButtonLeftHintImage(false);
-            uiMan.SetButtonRightHintImage(false);
             hintEnabled = false;
             return;
         }
@@ -954,12 +943,10 @@ public class GameManager : MonoBehaviour
                 hintCount--;
                 keyMan.SetHintCount(hintCount);
                 uiMan.SetTextLeftLabelHint(hintCount);
-                uiMan.SetTextRightLabelHint(hintCount);
             }
 
             uiMan.PlayPanelHintOnEnter();
             uiMan.SetButtonLeftHintImage(true);
-            uiMan.SetButtonRightHintImage(true);
             
             ResetMove();
 
@@ -967,14 +954,27 @@ public class GameManager : MonoBehaviour
             hintEnabled = true;
 
         } else {
-
-            /* Handle no hint situation */
+            /* No hints available */
         }
     }
 
-    public void OnButtonLRPausePressed()
+    public void OnButtonLeftPausePressed()
     {
         pauseEnable = true;
+    }
+
+#endregion
+
+#region PANEL_RIGHT_BUTTONS
+
+    public void OnButtonRightUndoPressed()
+    {
+        DecrementMove();
+    }
+
+    public void OnButtonRightResetPressed()
+    {
+        ResetMove();
     }
 
 #endregion

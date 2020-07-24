@@ -126,9 +126,7 @@ public class IAPManager : MonoBehaviour, IStoreListener
             UIManager man = GameObject.Find("UIManager").GetComponent<UIManager>();
             man.UpdatePanelStore();
             man.SetTextLeftLabelHint(keyMan.GetHintCount());
-            man.SetTextRightLabelHint(keyMan.GetHintCount());
             man.SetButtonLeftHintActive();
-            man.SetButtonRightHintActive();
         }
 
         return PurchaseProcessingResult.Complete;

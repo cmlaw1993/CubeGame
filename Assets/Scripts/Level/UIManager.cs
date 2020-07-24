@@ -16,7 +16,6 @@ public class UIManager : MonoBehaviour
     int levelNumber;
 
     bool audioEnable;
-    bool alignLeft;
     bool updateBoundExit;
     int dailyStreak;
 
@@ -34,7 +33,6 @@ public class UIManager : MonoBehaviour
         levelNumber = keyMan.GetLevelNumber();
 
         audioEnable = (keyMan.GetAudio() == KeyManager.Audio.ON) ? true : false;
-        alignLeft = (keyMan.GetAlignLR() == KeyManager.AlignLR.LEFT) ? true : false;
         updateBoundExit = false;
         dailyStreak = 0;
 
@@ -431,52 +429,14 @@ public class UIManager : MonoBehaviour
 
 #endregion
 
-#region PANEL_LEFT_RIGHT_COMMON
-
-    const float PANEL_LR_ENTER_TIME = 0.6F;
-    const float PANEL_LR_EXIT_TIME = 0.6F;
+#region PANEL_LEFT
 
     public Sprite spriteButtonHintOn;
     public Sprite spriteButtonHintOff;
     public Sprite spriteButtonHintAd;
 
-    /* Panel Left Right Buttons */
-
-    public void OnButtonLRHintAdPressed()
-    {
-        panelStore.SetActive(true);
-        textStoreHint.GetComponent<Text>().text = ":    " + keyMan.GetHintCount();
-        buttonStoreHintAdsBuy.GetComponent<Button>().interactable = true;
-        if (keyMan.GetAdFree() == KeyManager.AdFree.PURCHASED) {
-            buttonStoreNoAds.SetActive(false);
-        } else {
-            buttonStoreNoAds.SetActive(true);
-            buttonStoreNoAdsBuy.GetComponent<Button>().interactable = true;
-        }
-        buttonStoreHint5Buy.GetComponent<Button>().interactable = true;
-        buttonStoreHint21Buy.GetComponent<Button>().interactable = true;
-        buttonStoreHint45Buy.GetComponent<Button>().interactable = true;
-        buttonStoreHint100Buy.GetComponent<Button>().interactable = true;
-        buttonStoreClose.GetComponent<Button>().interactable = true;
-        if (alignLeft)
-            panelStoreMain.GetComponent<Animator>().Play("PanelEnterRight");
-        else
-            panelStoreMain.GetComponent<Animator>().Play("PanelEnterLeft");
-    }
-
-    public void OnButtonLRPausePressed()
-    {
-        PlayPanelPauseEnter();
-    }
-
-#endregion
-
-#region PANEL_LEFT
-
     GameObject panelLeft;
 
-    GameObject buttonLeftUndo;
-    GameObject buttonLeftReset;
     GameObject buttonLeftHint;
     GameObject buttonLeftHintAd;
     GameObject buttonLeftPause;
@@ -487,8 +447,6 @@ public class UIManager : MonoBehaviour
     {
         panelLeft = GameObject.Find("/UI/PanelLeft");
 
-        buttonLeftUndo = GameObject.Find("/UI/PanelLeft/PanelButton/ButtonUndo");
-        buttonLeftReset = GameObject.Find("/UI/PanelLeft/PanelButton/ButtonReset");
         buttonLeftHint = GameObject.Find("/UI/PanelLeft/PanelButton/ButtonHint");
         buttonLeftHintAd = GameObject.Find("/UI/PanelLeft/PanelButton/ButtonHintAd");
         buttonLeftPause = GameObject.Find("/UI/PanelLeft/PanelButton/ButtonPause");
@@ -497,27 +455,17 @@ public class UIManager : MonoBehaviour
     }
 
     void SetupPanelLeft()
-    {
-        /* Do not call SetPanelLeftEnter() as it has audio. */
-        if (alignLeft)
-            panelLeft.GetComponent<Animator>().Play("PanelLeftEnter");
-
+    { 
+        PlayPanelLeftEnter();
         SetButtonLeftHintActive();
         SetButtonLeftAllInteractable(false);
         SetButtonLeftHintImage(false);
         SetTextLeftLabelHint(keyMan.GetHintCount());
     }
 
-    public void SetPanelLeftEnter()
+    public void PlayPanelLeftEnter()
     {
         panelLeft.GetComponent<Animator>().Play("PanelLeftEnter");
-        audioMan.PlayRLEnterAudio();
-    }
-
-    public void SetPanelLeftExit()
-    {
-        panelLeft.GetComponent<Animator>().Play("PanelLeftExit");
-        audioMan.PlayRLExitAudio();
     }
 
     public void SetButtonLeftHintActive()
@@ -533,8 +481,6 @@ public class UIManager : MonoBehaviour
 
     public void SetButtonLeftAllInteractable(bool interactable)
     {
-        buttonLeftUndo.GetComponent<Button>().interactable = interactable;
-        buttonLeftReset.GetComponent<Button>().interactable = interactable;
         buttonLeftPause.GetComponent<Button>().interactable = interactable;
 
         if (buttonLeftHint.activeSelf)
@@ -556,6 +502,18 @@ public class UIManager : MonoBehaviour
         textLeftLabelHint.GetComponent<Text>().text = "Hint(" + num.ToString() + ")";
     }
 
+    /* Panel Left Buttons */
+
+    public void OnButtonLeftHintAdPressed()
+    {
+        PlayPanelStoreEnter();
+    }
+
+    public void OnButtonLeftPausePressed()
+    {
+        PlayPanelPauseEnter();
+    }
+
 #endregion
 
 #region PANEL_RIGHT
@@ -564,11 +522,6 @@ public class UIManager : MonoBehaviour
 
     GameObject buttonRightUndo;
     GameObject buttonRightReset;
-    GameObject buttonRightHint;
-    GameObject buttonRightHintAd;
-    GameObject buttonRightPause;
-
-    GameObject textRightLabelHint;
 
     void FindPanelRightObjects()
     {
@@ -576,71 +529,23 @@ public class UIManager : MonoBehaviour
         
         buttonRightUndo = GameObject.Find("/UI/PanelRight/PanelButton/ButtonUndo");
         buttonRightReset = GameObject.Find("/UI/PanelRight/PanelButton/ButtonReset");
-        buttonRightHint = GameObject.Find("/UI/PanelRight/PanelButton/ButtonHint");
-        buttonRightHintAd = GameObject.Find("/UI/PanelRight/PanelButton/ButtonHintAd");
-        buttonRightPause = GameObject.Find("/UI/PanelRight/PanelButton/ButtonPause");
-
-        textRightLabelHint = GameObject.Find("/UI/PanelRight/PanelButton/LabelHint");
     }
 
     void SetupPanelRight()
     {
-        /* Do not call SetPanelRightEnter() as it has audio */
-        if (!alignLeft)
-            panelRight.GetComponent<Animator>().Play("PanelRightEnter");
-
-        SetButtonRightHintActive();
+        PlayPanelRightEnter();
         SetButtonRightAllInteractable(false);
-        SetButtonRightHintImage(false);
-        SetTextRightLabelHint(keyMan.GetHintCount());
     }
 
-    public void SetPanelRightEnter()
+    public void PlayPanelRightEnter()
     {
         panelRight.GetComponent<Animator>().Play("PanelRightEnter");
-        audioMan.PlayRLEnterAudio();
-    }
-
-    public void SetPanelRightExit()
-    {
-        panelRight.GetComponent<Animator>().Play("PanelRightExit");
-        audioMan.PlayRLExitAudio();
-    }
-
-    public void SetButtonRightHintActive()
-    {
-        if (keyMan.GetHintCount() == 0) {
-            buttonRightHint.SetActive(false);
-            buttonRightHintAd.SetActive(true);
-        } else {
-            buttonRightHint.SetActive(true);
-            buttonRightHintAd.SetActive(false);
-        }
     }
 
     public void SetButtonRightAllInteractable(bool interactable)
     {
         buttonRightUndo.GetComponent<Button>().interactable = interactable;
         buttonRightReset.GetComponent<Button>().interactable = interactable;
-        buttonRightPause.GetComponent<Button>().interactable = interactable;
-
-        if (buttonRightHint.activeSelf)
-            buttonRightHint.GetComponent<Button>().interactable = interactable;
-        if (buttonRightHintAd.activeSelf)
-            buttonRightHintAd.GetComponent<Button>().interactable = interactable;
-    }
-
-    public void SetButtonRightHintImage(bool hintOn)
-    {
-        if (hintOn)
-            buttonRightHint.GetComponent<Image>().sprite = spriteButtonHintOn;
-        else
-            buttonRightHint.GetComponent<Image>().sprite = spriteButtonHintOff;
-    }
-
-    public void SetTextRightLabelHint(int num)
-    {
-        textRightLabelHint.GetComponent<Text>().text = "Hint(" + num.ToString() + ")";
     }
 
 #endregion
@@ -674,20 +579,18 @@ public class UIManager : MonoBehaviour
 #region PANEL_HINT
 
     GameObject panelHintOn;
-    GameObject panelHintLeft;
-    GameObject panelHintRight;
+    GameObject panelHint;
 
     void FindPanelHintObjects()
     {
         panelHintOn = GameObject.Find("UI/PanelHintOn");
-        panelHintLeft = GameObject.Find("UI/PanelHintLeft");
-        panelHintRight = GameObject.Find("UI/PanelHintRight");
+        panelHint = GameObject.Find("UI/PanelHint");
     }
 
     void SetupPanelHint()
     {
         SetPanelHintOnActive(false);
-        SetPanelHintLRActive(false);
+        SetPanelHintActive(false);
     }
 
     public void SetPanelHintOnActive(bool active)
@@ -709,57 +612,36 @@ public class UIManager : MonoBehaviour
         audioMan.PlayHintOnExitAudio();
     }
 
-    public void SetPanelHintLRActive(bool active)
+    public void SetPanelHintActive(bool active)
     {
-        if (active) {
-            if (alignLeft)
-                panelHintRight.SetActive(active);
-            else
-                panelHintLeft.SetActive(active);
-        } else {
-            panelHintRight.SetActive(false);
-            panelHintLeft.SetActive(false);
-        }
+        if (active)
+            panelHint.SetActive(active);
+        else
+            panelHint.SetActive(false);
     }
 
     public void PlayPanelHintMoveUp()
     {
-        SetPanelHintLRActive(true);
-
-        if (alignLeft)
-            panelHintRight.GetComponent<Animator>().Play("PanelHintUp");
-        else
-            panelHintLeft.GetComponent<Animator>().Play("PanelHintUp");
+        SetPanelHintActive(true);
+        panelHint.GetComponent<Animator>().Play("PanelHintUp");
     }
 
     public void PlayPanelHintMoveDown()
     {
-        SetPanelHintLRActive(true);
-
-        if (alignLeft)
-            panelHintRight.GetComponent<Animator>().Play("PanelHintDown");
-        else
-            panelHintLeft.GetComponent<Animator>().Play("PanelHintDown");
+        SetPanelHintActive(true);
+        panelHint.GetComponent<Animator>().Play("PanelHintDown");
     }
 
     public void PlayPanelHintMoveLeft()
     {
-        SetPanelHintLRActive(true);
-
-        if (alignLeft)
-            panelHintRight.GetComponent<Animator>().Play("PanelHintLeft");
-        else
-            panelHintLeft.GetComponent<Animator>().Play("PanelHintRight");
+        SetPanelHintActive(true);
+        panelHint.GetComponent<Animator>().Play("PanelHintLeft");
     }
 
     public void PlayPanelHintMoveRight()
     {
-        SetPanelHintLRActive(true);
-
-        if (alignLeft)
-            panelHintRight.GetComponent<Animator>().Play("PanelHintRight");
-        else
-            panelHintLeft.GetComponent<Animator>().Play("PanelHintLeft");
+        SetPanelHintActive(true);
+        panelHint.GetComponent<Animator>().Play("PanelHintRight");
     }
 
 #endregion
@@ -774,18 +656,18 @@ public class UIManager : MonoBehaviour
 
     GameObject panelPause;
     GameObject panelPauseMain;
-    GameObject buttonPauseMenu;
-    GameObject buttonPauseAlignLR;
+    GameObject buttonPauseStore;
     GameObject buttonPauseAudio;
+    GameObject buttonPauseMenu;
     GameObject buttonPauseResume;
 
     void FindPanelPauseObjects()
     {
         panelPause = GameObject.Find("/UI/PanelPause");
         panelPauseMain = GameObject.Find("/UI/PanelPause/PanelMain");
-        buttonPauseMenu = GameObject.Find("/UI/PanelPause/PanelMain/PanelButton/ButtonMenu");
-        buttonPauseAlignLR = GameObject.Find("/UI/PanelPause/PanelMain/PanelButton/ButtonAlignLR");
+        buttonPauseStore = GameObject.Find("/UI/PanelPause/PanelMain/PanelButton/ButtonStore");
         buttonPauseAudio = GameObject.Find("/UI/PanelPause/PanelMain/PanelButton/ButtonAudio");
+        buttonPauseMenu = GameObject.Find("/UI/PanelPause/PanelMain/PanelButton/ButtonMenu");
         buttonPauseResume = GameObject.Find("/UI/PanelPause/PanelMain/PanelButton/ButtonResume");
     }
 
@@ -807,17 +689,17 @@ public class UIManager : MonoBehaviour
 
     void SetPanelPauseInteractiveTrue()
     {
-        buttonPauseMenu.GetComponent<Button>().interactable = true;
-        buttonPauseAlignLR.GetComponent<Button>().interactable = true;
+        buttonPauseStore.GetComponent<Button>().interactable = true;
         buttonPauseAudio.GetComponent<Button>().interactable = true;
+        buttonPauseMenu.GetComponent<Button>().interactable = true;
         buttonPauseResume.GetComponent<Button>().interactable = true;
     }
 
     void SetPanelPauseInteractiveFalse()
     {
-        buttonPauseMenu.GetComponent<Button>().interactable = false;
-        buttonPauseAlignLR.GetComponent<Button>().interactable = false;
+        buttonPauseStore.GetComponent<Button>().interactable = false;
         buttonPauseAudio.GetComponent<Button>().interactable = false;
+        buttonPauseMenu.GetComponent<Button>().interactable = false;
         buttonPauseResume.GetComponent<Button>().interactable = false;
     }
 
@@ -829,19 +711,10 @@ public class UIManager : MonoBehaviour
             buttonPauseAudio.GetComponent<Image>().sprite = spriteButtonAudioOff;
     }
 
-    void SetButtonPauseAlignLRImage(bool alignL)
-    {
-        if (alignL)
-            buttonPauseAlignLR.GetComponent<Image>().sprite = spriteButtonAlignR;
-        else
-            buttonPauseAlignLR.GetComponent<Image>().sprite = spriteButtonAlignL;
-    }
-
     void PlayPanelPauseEnter()
     {
         SetPanelPauseActiveTrue();
         SetButtonPauseAudioImage(audioEnable);
-        SetButtonPauseAlignLRImage(alignLeft);
         panelPauseMain.GetComponent<Animator>().Play("PanelEnterMiddle");
         Invoke("SetPanelPauseInteractiveTrue", PANEL_ENTER_EXIT_ANIMATION_TIME); 
     }
@@ -855,40 +728,25 @@ public class UIManager : MonoBehaviour
 
     void SetPanelPauseInteractableTrue()
     {
-        buttonPauseMenu.GetComponent<Button>().interactable = true;
-        buttonPauseAlignLR.GetComponent<Button>().interactable = true;
+        buttonPauseStore.GetComponent<Button>().interactable = true;
         buttonPauseAudio.GetComponent<Button>().interactable = true;
+        buttonPauseMenu.GetComponent<Button>().interactable = true;
         buttonPauseResume.GetComponent<Button>().interactable = true;
     }
 
     void SetPanelPauseInteractableFalse()
     {
-        buttonPauseMenu.GetComponent<Button>().interactable = false;
-        buttonPauseAlignLR.GetComponent<Button>().interactable = false;
+        buttonPauseStore.GetComponent<Button>().interactable = false;
         buttonPauseAudio.GetComponent<Button>().interactable = false;
+        buttonPauseMenu.GetComponent<Button>().interactable = false;
         buttonPauseResume.GetComponent<Button>().interactable = false;
     }
 
     /* Panel Pause Buttons */
 
-    public void OnButtonPauseAlignLRPressed()
+    public void OnButtonPauseStorePressed()
     {
-        alignLeft = !alignLeft;
-
-        SetButtonPauseAlignLRImage(alignLeft);
-        SetPanelPauseInteractableFalse();
-
-        if (alignLeft) {
-            keyMan.SetAlignLR(KeyManager.AlignLR.LEFT);
-            SetPanelRightExit();
-            Invoke("SetPanelLeftEnter", PANEL_LR_EXIT_TIME);
-        } else {
-            keyMan.SetAlignLR(KeyManager.AlignLR.RIGHT);
-            SetPanelLeftExit();
-            Invoke("SetPanelRightEnter", PANEL_LR_EXIT_TIME);
-        }
-
-        Invoke("SetPanelPauseInteractableTrue", PANEL_LR_EXIT_TIME + PANEL_LR_ENTER_TIME);
+        PlayPanelStoreEnter();
     }
 
     public void OnButtonPauseAudioPressed()
@@ -1150,11 +1008,11 @@ public class UIManager : MonoBehaviour
                 animDelay += WIN_STAR_ENTER_ANIMATION_TIME;
             }
 
-            if (newRecord) {
-                animDelay += WIN_NEW_RECORD_PRE_ENTER_ANIMATION_TIME;
-                Invoke("PlayNewRecordEnter", animDelay);
-                animDelay += WIN_NEW_RECORD_ENTER_ANIMATION_TIME;
-            }
+            // if (newRecord) {
+            //     animDelay += WIN_NEW_RECORD_PRE_ENTER_ANIMATION_TIME;
+            //     Invoke("PlayNewRecordEnter", animDelay);
+            //     animDelay += WIN_NEW_RECORD_ENTER_ANIMATION_TIME;
+            // }
 
             if (stars >= 3) {
                 animDelay += WIN_BEST_SOLUTION_PRE_ENTER_ANIMATION_TIME;
@@ -1227,6 +1085,25 @@ public class UIManager : MonoBehaviour
         SetStoreHintCount(keyMan.GetHintCount());
     }
 
+    void PlayPanelStoreEnter()
+    {
+        panelStore.SetActive(true);
+        textStoreHint.GetComponent<Text>().text = ":    " + keyMan.GetHintCount();
+        buttonStoreHintAdsBuy.GetComponent<Button>().interactable = true;
+        if (keyMan.GetAdFree() == KeyManager.AdFree.PURCHASED) {
+            buttonStoreNoAds.SetActive(false);
+        } else {
+            buttonStoreNoAds.SetActive(true);
+            buttonStoreNoAdsBuy.GetComponent<Button>().interactable = true;
+        }
+        buttonStoreHint5Buy.GetComponent<Button>().interactable = true;
+        buttonStoreHint21Buy.GetComponent<Button>().interactable = true;
+        buttonStoreHint45Buy.GetComponent<Button>().interactable = true;
+        buttonStoreHint100Buy.GetComponent<Button>().interactable = true;
+        buttonStoreClose.GetComponent<Button>().interactable = true;
+        panelStoreMain.GetComponent<Animator>().Play("PanelEnterLeft");
+    }
+
     /* Panel Store Button */
 
     public void OnButtonStoreClosePressed()
@@ -1238,10 +1115,7 @@ public class UIManager : MonoBehaviour
         buttonStoreHint45Buy.GetComponent<Button>().interactable = false;
         buttonStoreHint100Buy.GetComponent<Button>().interactable = false;
         buttonStoreClose.GetComponent<Button>().interactable = false;
-        if (alignLeft)
-            panelStoreMain.GetComponent<Animator>().Play("PanelExitRight");
-        else
-            panelStoreMain.GetComponent<Animator>().Play("PanelExitLeft");
+        panelStoreMain.GetComponent<Animator>().Play("PanelExitRight");
         Invoke("SetPanelStoreActiveFalse", PANEL_ENTER_EXIT_ANIMATION_TIME);
     }
 
